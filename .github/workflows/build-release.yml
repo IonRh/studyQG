@@ -11,39 +11,71 @@ on:
         required: false
         default: ''
         
+
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    name: 构建 ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [win]  # 构建三个平台的包
+        os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
-      - name: Checkout code
+      - name: 检出代码
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: 设置 Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14'  # Electron 8.x 推荐 Node 版本
+          node-version: '14'
+          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install && npm install typescript@latest --save-dev
+      - name: 安装依赖
+        run: npm ci
 
-      - name: Build TypeScript
-        run: npm run build
-
-      - name: Build App
+      - name: 构建应用
         run: |
-          if [ "${{ matrix.os }}" == "win" ]; then
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
             npm run build:win
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            npm run build:mac
+          else
+            npm run build:linux
           fi
+        shell: bash
 
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v2
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-artifacts
+          path: build/
+
+  release:
+    name: 创建发布
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+
+      - name: 下载所有构建产物
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: 显示结构
+        run: ls -R
+        working-directory: artifacts
+
+      - name: 创建发布
+        uses: softprops/action-gh-release@v1
         with:
           files: |
-            build/**/*  # 打包产物
+            artifacts/**/*.exe
+            artifacts/**/*.dmg
+            artifacts/**/*.AppImage
+          draft: false
+          prerelease: false
+          generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
