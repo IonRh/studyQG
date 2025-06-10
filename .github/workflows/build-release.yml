@@ -1,0 +1,53 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name for the release (e.g., v1.0.0)'
+        required: true
+      release_notes:
+        description: 'Release notes or changelog for this version'
+        required: false
+        default: ''
+        
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [mac, win, linux]  # 构建三个平台的包
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'  # Electron 8.x 推荐 Node 版本
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Build App
+        run: |
+          if [ "${{ matrix.os }}" == "mac" ]; then
+            npm run build:mac
+          elif [ "${{ matrix.os }}" == "win" ]; then
+            npm run build:win
+          elif [ "${{ matrix.os }}" == "linux" ]; then
+            npm run build:linux
+          fi
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/**/*  # 打包产物
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
