@@ -1,23 +1,9 @@
-# 学习强国 自动学习
+# 学 xi 强 guo
 
-## 下载链接
+增加消息推送
 
-[MacOS](https://github.com/v2018z/xueXiQiangguo/tree/main/build/MacOS)
+修复已知问题
 
-[Windows 免安装版](https://github.com/v2018z/xueXiQiangguo/tree/main/build/Windows) 
+不维护
 
-[Linux 桌面版](https://github.com/v2018z/xueXiQiangguo/tree/main/build/Linux)
-#
-## 作者有话说
-
-本软件为公益性质，永久免费使用
-
-如果你为本软件支付过费用，请立即退款
-
-不接受任何捐款
-
-禁止各种形式的商用
-
-#
-
-> 本项目不再维护
+原作者：https://github.com/v2018z/studyxixi
