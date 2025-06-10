@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
+      fail-fast: false  # 防止一个平台失败导致其他平台取消
 
     steps:
       - name: 检出代码
@@ -33,22 +34,27 @@ jobs:
       - name: 安装依赖
         run: npm ci
 
-      - name: 构建应用
+      - name: 构建应用 (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
-          if [ "${{ matrix.os }}" == "windows-latest" ]; then
-            npm run build:win
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            npm run build:mac
-          else
-            npm run build:linux
-          fi
-        shell: bash
+          chcp 65001
+          npm run build:win
+        shell: cmd
+
+      - name: 构建应用 (macOS)
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
+
+      - name: 构建应用 (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run build:linux
 
       - name: 上传构建产物
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-artifacts
           path: build/
+          retention-days: 5
 
   release:
     name: 创建发布
@@ -59,17 +65,24 @@ jobs:
         uses: actions/checkout@v3
 
       - name: 下载所有构建产物
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
+          merge-multiple: false
 
       - name: 显示结构
         run: ls -R
         working-directory: artifacts
 
+      - name: 获取版本号
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: 创建发布
         uses: softprops/action-gh-release@v1
         with:
+          name: 学习强国 ${{ steps.get_version.outputs.VERSION }}
           files: |
             artifacts/**/*.exe
             artifacts/**/*.dmg
