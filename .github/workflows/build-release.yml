@@ -29,7 +29,7 @@ jobs:
           node-version: '14'  # Electron 8.x 推荐 Node 版本
 
       - name: Install dependencies
-        run: npm install
+        run: npm install && npm install typescript@latest --save-dev
 
       - name: Build TypeScript
         run: npm run build
