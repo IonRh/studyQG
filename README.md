@@ -4,6 +4,6 @@
 
 修复已知问题
 
-不维护
+只有win 不维护
 
 原作者：https://github.com/v2018z/studyxixi
