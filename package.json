@@ -1,0 +1,70 @@
+{
+  "name": "sdudyxixi",
+  "version": "1.1.2",
+  "author": "jax.xie <v2018z@163.com>",
+  "main": "./dist/main.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "chcp 65001 && npm run build && electron ./dist/main.js",
+    "start:mac": "npm run build && electron ./dist/main.js",
+    "build:mac": "npm run build && electron-builder",
+    "build:win": "npm run build && electron-builder --win",
+    "build:linux": "npm run build && electron-builder --linux"
+  },
+  "build": {
+    "productName": "学习强国V2.1",
+    "appId": "org.jax.study.xixi",
+    "directories": {
+      "output": "build"
+    },
+    "icon": "./resources/icon.png",
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "./resources/icon.png"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "./resources/icon.png"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "./resources/icon.png"
+    }
+  },
+  "devDependencies": {
+    "@types/js-base64": "^2.3.1",
+    "@types/js-cookie": "^2.2.6",
+    "@types/lodash": "^4.14.151",
+    "@types/node": "10.17.0",
+    "@types/qs": "^6.9.2",
+    "electron": "8.2.5",
+    "electron-builder": "22.6.1",
+    "electron-updater": "4.3.1",
+    "path": "^0.12.7",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.9.2"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "js-base64": "2.5.2",
+    "js-cookie": "^2.2.1",
+    "lodash": "^4.17.15",
+    "qs": "^6.9.4"
+  }
+}
